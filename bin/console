@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require 'irb'
+require 'paint'
+require 'progress_bar'
+require 'tty-table'
+require_relative '../lib/scotrug_helper'
+
+include ScotrugHelper
+
+def display_nice_table(header, rows)
+  
+  header = header.map{|h| Paint[h, '00ffff', 'ff00ff']}
+  table = TTY::Table.new header, []
+  bar = ProgressBar.new(rows.size)
+  rows.each do |row|
+    sleep 1
+    table << row
+    bar.increment!
+  end
+  table.render(:ascii) do |renderer|   
+    renderer.border.separator = :each_row
+    renderer.filter = Proc.new do |val, row_index, col_index|
+      col_index == 1 ? Paint[val, '00ff00'] : val
+    end
+  end
+end
+
+IRB.start
